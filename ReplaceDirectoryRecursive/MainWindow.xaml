@@ -1,0 +1,32 @@
+﻿<Window x:Class="ReplaceDirectoryRecursive.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ReplaceDirectoryRecursive"
+        mc:Ignorable="d"
+        Title="Replace Directories With '_'" Height="382.101" Width="876.036" ResizeMode="CanMinimize">
+    <Grid>
+        <Label x:Name="labelFonte" Content="Origem:" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="labelDestino" Content="Destino:" HorizontalAlignment="Left" Margin="0,54,0,0" VerticalAlignment="Top" Width="50"/>
+        <TextBox x:Name="DiretorioFonte" HorizontalAlignment="Left" Height="39" Margin="62,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="751"/>
+        <TextBox x:Name="DiretorioDestino" HorizontalAlignment="Left" Height="39" Margin="62,54,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="751" />
+        <Button x:Name="buttonReplace" Content="Replace" HorizontalAlignment="Left" Margin="62,285,0,0" VerticalAlignment="Top" Width="751" Click="replace_Click" Height="26"/>
+        <Button x:Name="buttonReset" Content="Reset" HorizontalAlignment="Left" Margin="62,285,0,0" VerticalAlignment="Top" Width="751" Click="button_ClickReset" Background="Orange" Visibility="Hidden" Height="26"/>
+        <ProgressBar HorizontalAlignment="Left" Minimum="0" Maximum="100" Height="18" Margin="62,142,0,0" VerticalAlignment="Top" Width="751" FlowDirection="LeftToRight" Name="andamentoReplace" />
+        <TextBox x:Name="textBoxResultCopy" HorizontalAlignment="Left" Height="95" Margin="62,174,0,0" TextWrapping="Wrap" IsReadOnly="True" Text="" VerticalAlignment="Top" Width="751"/>
+        <Label x:Name="label1" Content="Quantidade De Pastas" HorizontalAlignment="Left" Margin="62,98,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="qtdPastasExibe" Content="0" HorizontalAlignment="Left" Margin="193,98,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.361,-0.291" Width="80"/>
+        <Label x:Name="label2" Content="Quantidade Arquivos" HorizontalAlignment="Left" Margin="278,98,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="qtdArquivosExibe" Content="0" HorizontalAlignment="Left" Margin="405,98,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.01,-0.013" Width="79"/>
+        <Label x:Name="label3" Content="Total De Itens" HorizontalAlignment="Left" Margin="484,98,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.316,0.607"/>
+        <Label x:Name="qdtTotalExibe" Content="0" HorizontalAlignment="Left" Margin="571,98,0,0" VerticalAlignment="Top" Width="63"/>
+        <Button x:Name="buttonSelOrigem" HorizontalAlignment="Left" Margin="818,10,0,0" VerticalAlignment="Top" Width="31" Height="36" Click="button_ClickSelFolders">
+            <Image x:Name="open_folderOrigem" Height="16" Source="open-folder-with-document.png" Stretch="Fill" Width="16"/>
+        </Button>
+        <Button x:Name="buttonSelDestino" HorizontalAlignment="Left" Margin="818,54,0,0" VerticalAlignment="Top" Width="31" Height="36" Click="button_ClickSelFolders">
+            <Image x:Name="open_folderDestino" Height="16" Source="open-folder-with-document.png" Stretch="Fill" Width="16"/>
+        </Button>
+
+    </Grid>
+</Window>

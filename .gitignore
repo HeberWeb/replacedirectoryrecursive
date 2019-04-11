@@ -1,0 +1,6 @@
+*.suo*
+ReplaceDirectoryRecursive/bin/
+ReplaceDirectoryRecursive/obj/
+ReplaceDirectoryRecursive/.vs
+
+
