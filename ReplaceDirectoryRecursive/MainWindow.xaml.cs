@@ -198,6 +198,22 @@ namespace ReplaceDirectoryRecursive
             }
         }
 
+        private void createCopy_Click(object sender, RoutedEventArgs e)
+        {
+            if (createCopy.IsChecked == false)
+            {
+                labelDestino.Visibility = Visibility.Hidden;
+                DiretorioDestino.Visibility = Visibility.Hidden;
+                buttonSelDestino.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                labelDestino.Visibility = Visibility.Visible;
+                DiretorioDestino.Visibility = Visibility.Visible;
+                buttonSelDestino.Visibility = Visibility.Visible;
+            }
+        }
+
         private async void Inicia(string caminhoDiretorio, string caminhoDestino)
         {
             contaPastaTotal = 1;

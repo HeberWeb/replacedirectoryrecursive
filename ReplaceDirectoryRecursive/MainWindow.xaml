@@ -29,7 +29,7 @@
         </Button>
         <Label Name="Label3" Content="Tamanho" HorizontalAlignment="Left" Margin="655,98,0,0" VerticalAlignment="Top"  Width="66"/>
         <Label Name="sizeFilesExibe" Content="0" HorizontalAlignment="Left" Margin="726,98,0,0" VerticalAlignment="Top" Width="87"/>
-        <CheckBox x:Name="createCopy" Content="Criar Uma Cópia para o destino selecionado?" HorizontalAlignment="Left" Margin="62,316,0,0" VerticalAlignment="Top" Height="27" Width="276" IsChecked="True"/>
+        <CheckBox x:Name="createCopy" Content="Criar Uma Cópia para o destino selecionado?" HorizontalAlignment="Left" Margin="62,316,0,0" VerticalAlignment="Top" Height="27" Width="276" IsChecked="True" Click="createCopy_Click" />
 
     </Grid>
 </Window>
