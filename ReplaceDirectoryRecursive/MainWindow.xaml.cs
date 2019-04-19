@@ -174,6 +174,7 @@ namespace ReplaceDirectoryRecursive
             DiretorioDestino.IsReadOnly = false;
             DiretorioFonte.Text = "";
             DiretorioDestino.Text = "";
+            createCopy.IsChecked = true;
         }
 
         private void button_ClickSelFolders(object sender, RoutedEventArgs e)
