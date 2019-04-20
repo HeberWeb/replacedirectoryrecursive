@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReplaceDirectoryRecursive.Libs;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,6 +29,10 @@ namespace ReplaceDirectoryRecursive
         int contaTotalItens = 0;
         int contaPastaReplace = 0;
         bool? isCreateCopy = true;
+        bool? isReplaceDirectories = false;
+        bool? isReplaceFiles = false;
+        string txtFindText = "";
+        string txtReplaceTo = "";
 
         long sizeFiles = 0;
 
@@ -35,7 +40,7 @@ namespace ReplaceDirectoryRecursive
         public event CaminhoCopyHandler PathCopyEvent;
 
         public delegate void ContagemItensHandler(int qtd);
-        public delegate void ContagemTamanhoHandler(long qtd);
+        public delegate void ContagemTamanhoHandler(long bytes);
         public event ContagemItensHandler ContagemPastasEvent;
         public event ContagemItensHandler ContagemArquivosEvent;
         public event ContagemItensHandler ContagemTotalEvent;
@@ -72,37 +77,11 @@ namespace ReplaceDirectoryRecursive
             ));
         }
 
-        private void OnContagemTamanho(long qtd)
+        private void OnContagemTamanho(long bytes)
         {
-            decimal tamanhoExibe;
-            string tipo = "bytes";
-            decimal div = qtd;
-            if (qtd >= 1024)
-            {
-                div = ((decimal)qtd / 1024);
-                tipo = "KB";
-            }
-
-            if (qtd >= 1048576)
-            {
-                div = ((decimal)div / 1024);
-                tipo = "MB";
-            }
-
-            if (qtd >= 1073741824)
-            {
-                div = ((decimal)div / 1024);
-                tipo = "GB";
-            }
-
-            if (qtd >= 1099511627776)
-            {
-                div = ((decimal)div / 1024);
-                tipo = "TB";
-            }
-            tamanhoExibe = (decimal)Math.Round(div, 2);
+            var info = FilesInfo.InfoSize(bytes);
             Dispatcher.BeginInvoke((Action)(() =>
-                sizeFilesExibe.Content = string.Format("{0} ({1})", tamanhoExibe, tipo)
+                sizeFilesExibe.Content = string.Format("{0} ({1})", info.Size, info.Format)
             ));
         }
 
@@ -135,6 +114,10 @@ namespace ReplaceDirectoryRecursive
         private void replace_Click(object sender, RoutedEventArgs e)
         {
             this.isCreateCopy = createCopy.IsChecked;
+            this.txtFindText = findText.Text;
+            this.txtReplaceTo = replaceTo.Text;
+            this.isReplaceDirectories = replaceDirectories.IsChecked;
+            this.isReplaceFiles = replaceFiles.IsChecked;
             if (DiretorioFonte.Text != "" && DiretorioDestino.Text != "")
             {
                 var caminhoDiretorio = DiretorioFonte.Text;
@@ -233,7 +216,7 @@ namespace ReplaceDirectoryRecursive
                andamentoReplace.IsIndeterminate = false
             ));
 
-            await Task.Run(() => replaceDiretorioRecursivo(caminhoDiretorio, caminhoDestino));
+            //await Task.Run(() => replaceDiretorioRecursivo(caminhoDiretorio, caminhoDestino));
         }
 
         public async Task IniciaContagenItens(string caminhoDiretorio)
@@ -289,11 +272,11 @@ namespace ReplaceDirectoryRecursive
             if (Directory.Exists(caminhoDiretorio))
             {
                 var vetCaminho = caminhoDiretorio.Split('\\');
-                string novoCaminho = "";// caminhoDestino + "\\" + vetCaminho[vetCaminho.Length - 1].ToString().Replace(" ", "_");
+                string novoCaminho = "";
                 DirectoryInfo dirAtua = new DirectoryInfo(caminhoDiretorio); ;
                 if (this.isCreateCopy == true)
                 {
-                    novoCaminho = caminhoDestino + "\\" + vetCaminho[vetCaminho.Length - 1].ToString().Replace(" ", "_");
+                    novoCaminho = caminhoDestino + "\\" + vetCaminho[vetCaminho.Length - 1].ToString().Replace(this.txtFindText, this.txtReplaceTo);
                     Directory.CreateDirectory(novoCaminho);
                 }
                 else
@@ -308,7 +291,7 @@ namespace ReplaceDirectoryRecursive
                         {
                             if (i == (vetCaminho.Length - 1))
                             {
-                                novoCaminho = novoCaminho + "\\" + vetCaminho[i].ToString().Replace(" ", "_");
+                                novoCaminho = novoCaminho + "\\" + vetCaminho[i].ToString().Replace(this.txtFindText, this.txtReplaceTo);
                             }
                             else
                             {
@@ -332,11 +315,25 @@ namespace ReplaceDirectoryRecursive
                 FileInfo[] arquivos = dirAtua.GetFiles();
                 foreach (var fileItem in arquivos)
                 {
-                    string caminhoFile = System.IO.Path.Combine(novoCaminho, fileItem.Name);
+                    string fileNewName = fileItem.Name;
+                    if (this.isReplaceFiles == true)
+                    {
+                        fileNewName.Replace(this.txtFindText, this.txtReplaceTo);
+                    }
+                    string caminhoFile = System.IO.Path.Combine(novoCaminho, fileNewName);
                     contaPastaReplace++;
                     PathCopyEvent(caminhoFile, contaPastaReplace);
-                    if(this.isCreateCopy == true)
+                    if (this.isCreateCopy == true)
+                    {
                         fileItem.CopyTo(caminhoFile, true);
+                    }
+                    else
+                    {
+                        if (this.isReplaceFiles == true)
+                        {
+                            fileItem.MoveTo(caminhoFile);
+                        }
+                    }
                 }
 
                 foreach (var item in subDir)

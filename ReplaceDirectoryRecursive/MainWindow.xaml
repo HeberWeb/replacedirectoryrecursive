@@ -5,16 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ReplaceDirectoryRecursive"
         mc:Ignorable="d"
-        Title="Replace Directories With '_'" Height="382.101" Width="876.036" ResizeMode="CanMinimize">
+        Title="Localizar e Substituir Nomes De Diretórios e Arquivos" Height="435.101" Width="876.036" ResizeMode="CanMinimize">
     <Grid>
         <Label x:Name="labelFonte" Content="Origem:" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="50"/>
         <Label x:Name="labelDestino" Content="Destino:" HorizontalAlignment="Left" Margin="0,54,0,0" VerticalAlignment="Top" Width="50"/>
         <TextBox x:Name="DiretorioFonte" HorizontalAlignment="Left" Height="39" Margin="62,10,0,0" TextWrapping="Wrap" Text="C:\Users\Heber\Desktop\Origem Teste" VerticalAlignment="Top" Width="751"/>
         <TextBox x:Name="DiretorioDestino" HorizontalAlignment="Left" Height="39" Margin="62,54,0,0" TextWrapping="Wrap" Text="C:\Users\Heber\Desktop\DestinoTeste" VerticalAlignment="Top" Width="751" />
-        <Button x:Name="buttonReplace" Content="Replace" HorizontalAlignment="Left" Margin="62,285,0,0" VerticalAlignment="Top" Width="751" Click="replace_Click" Height="26"/>
+        <Button x:Name="buttonReplace" Content="Replace" HorizontalAlignment="Left" Margin="62,370,0,0" VerticalAlignment="Top" Width="751" Click="replace_Click" Height="26"/>
         <Button x:Name="buttonReset" Content="Reset" HorizontalAlignment="Left" Margin="62,285,0,0" VerticalAlignment="Top" Width="751" Click="button_ClickReset" Background="Orange" Visibility="Hidden" Height="26"/>
         <ProgressBar HorizontalAlignment="Left" Minimum="0" Maximum="100" Height="18" Margin="62,142,0,0" VerticalAlignment="Top" Width="751" FlowDirection="LeftToRight" Name="andamentoReplace" />
-        <TextBox x:Name="textBoxResultCopy" HorizontalAlignment="Left" Height="95" Margin="62,174,0,0" TextWrapping="Wrap" IsReadOnly="True" Text="" VerticalAlignment="Top" Width="751"/>
+        <TextBox x:Name="textBoxResultCopy" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Height="95" Margin="62,174,0,0" TextWrapping="Wrap" IsReadOnly="True" Text="" VerticalAlignment="Top" Width="751"/>
         <Label x:Name="label1" Content="Quantidade De Pastas" HorizontalAlignment="Left" Margin="62,98,0,0" VerticalAlignment="Top"/>
         <Label x:Name="qtdPastasExibe" Content="0" HorizontalAlignment="Left" Margin="193,98,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.361,-0.291" Width="80"/>
         <Label x:Name="label2" Content="Quantidade Arquivos" HorizontalAlignment="Left" Margin="278,98,0,0" VerticalAlignment="Top"/>
@@ -29,7 +29,13 @@
         </Button>
         <Label Name="Label3" Content="Tamanho" HorizontalAlignment="Left" Margin="655,98,0,0" VerticalAlignment="Top"  Width="66"/>
         <Label Name="sizeFilesExibe" Content="0" HorizontalAlignment="Left" Margin="726,98,0,0" VerticalAlignment="Top" Width="87"/>
-        <CheckBox x:Name="createCopy" Content="Criar Uma Cópia para o destino selecionado?" HorizontalAlignment="Left" Margin="62,316,0,0" VerticalAlignment="Top" Height="27" Width="276" IsChecked="True" Click="createCopy_Click" />
+        <CheckBox x:Name="createCopy" Content="Criar Uma Cópia para um destino selecionado?" HorizontalAlignment="Left" Margin="62,274,0,0" VerticalAlignment="Top" Height="27" Width="276" IsChecked="True" Click="createCopy_Click" />
+        <CheckBox x:Name="replaceDirectories" Content="Substituir em Diretórios" HorizontalAlignment="Left" Margin="62,299,0,0" VerticalAlignment="Top" Height="27" Width="276" />
+        <CheckBox x:Name="replaceFiles" Content="Substituir em Arquivos" HorizontalAlignment="Left" Margin="62,326,0,0" VerticalAlignment="Top" Height="27" Width="276" />
+        <Label Content="Localizar:" HorizontalAlignment="Left" Margin="362,275,0,0" VerticalAlignment="Top" Width="93"/>
+        <Label Content="Substituir Por:" HorizontalAlignment="Left" Margin="362,306,0,0" VerticalAlignment="Top" Width="93"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="460,278,0,0" TextWrapping="Wrap" Text="" Name="findText" VerticalAlignment="Top" Width="120"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="460,306,0,0" TextWrapping="Wrap" Text="" Name="replaceTo" VerticalAlignment="Top" Width="120"/>
 
     </Grid>
 </Window>
