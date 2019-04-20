@@ -53,6 +53,24 @@ namespace ReplaceDirectoryRecursive
             ContagemTotalEvent += OnContagemTotal;
             ContagemTamanhoEvent += OnContagemTamanho;
             PathCopyEvent += OnPathCopy;
+            createModelListViewResult();
+        }
+
+        private void createModelListViewResult()
+        {
+            var gridView = new GridView();
+            this.listViewResultReplace.View = gridView;
+            gridView.Columns.Add(new GridViewColumn
+            {
+                Header = "Caminho",
+                DisplayMemberBinding = new Binding("Caminho"),
+                Width = (listViewResultReplace.Width - 100)
+            });
+            gridView.Columns.Add(new GridViewColumn
+            {
+                Header = "Status",
+                DisplayMemberBinding = new Binding("Status")
+            });
         }
 
         private void OnContagemPastas(int qtd)
@@ -89,25 +107,30 @@ namespace ReplaceDirectoryRecursive
             int multi = Convert.ToInt32(ContPasta * 100);
             float div = (float)(multi / contaTotalItens);
             int porcent = (int)Math.Round(div, 0);
-            Dispatcher.BeginInvoke((Action)(() =>
-                textBoxResultCopy.AppendText(valor+" - " + ContPasta + "\n")
-            ));
 
-            Dispatcher.BeginInvoke((Action)(() =>
-                textBoxResultCopy.ScrollToEnd()
-            ));
-
-            Dispatcher.BeginInvoke((Action)(() => 
-                andamentoReplace.Value = porcent
-            ));
-
-            if (porcent == 100)
+            string status = "Ok";
+            if (!sizerMaxLengthValid)
             {
-                MessageBox.Show("Processo Finalizado");
-                Dispatcher.BeginInvoke((Action)(() =>
-                    buttonReset.Visibility = Visibility.Visible
-                ));
+                status = "caminho maior que o permitido!";
             }
+            
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(() => {
+                andamentoReplace.Value = porcent;
+                listViewResultReplace.Items.Add(new ListViewReplaceResult()
+                {
+                    Caminho = valor + " - " + ContPasta,
+                    Status = status
+                });
+
+                listViewResultReplace.Items.MoveCurrentTo(listViewResultReplace.Items[listViewResultReplace.Items.Count - 1]);
+                listViewResultReplace.ScrollIntoView(listViewResultReplace.Items[listViewResultReplace.Items.Count - 1]);
+
+                if (porcent == 100)
+                {
+                    MessageBox.Show("Processo Finalizado");
+                    buttonReset.Visibility = Visibility.Visible;
+                }
+            }));
         }
 
         private void replace_Click(object sender, RoutedEventArgs e)
@@ -117,24 +140,38 @@ namespace ReplaceDirectoryRecursive
             this.txtReplaceTo = replaceTo.Text;
             this.isReplaceDirectories = replaceDirectories.IsChecked;
             this.isReplaceFiles = replaceFiles.IsChecked;
-            if (DiretorioFonte.Text != "" && DiretorioDestino.Text != "")
+
+            
+            if (formIsvalid())
             {
                 var caminhoDiretorio = DiretorioFonte.Text;
                 var caminhoDestino = DiretorioDestino.Text;
                 andamentoReplace.IsIndeterminate = true;
                 buttonReplace.Visibility = Visibility.Hidden;
-                textBoxResultCopy.AppendText("Realizando contagem dos itens...\n");
                 DiretorioFonte.IsReadOnly = true;
                 DiretorioDestino.IsReadOnly = true;
                 buttonSelOrigem.IsEnabled = false;
                 buttonSelDestino.IsEnabled = false;
                 Task.Run(() => Inicia(caminhoDiretorio, caminhoDestino));
-            }
-            else
+            }          
+        }
+
+        private bool formIsvalid()
+        {
+            bool resultValid = true;
+            if (DiretorioFonte.Text == "")
             {
-                MessageBox.Show("Preencha origem e destino");
+                resultValid = false;
+                MessageBox.Show("Preencha o campo Origem!");
             }
-           
+
+            if (resultValid == true && DiretorioDestino.Text == "" && isCreateCopy  == true)
+            {
+                resultValid = false;
+                MessageBox.Show("Preencha o campo Destino!");
+            }
+
+            return resultValid;
         }
 
         private void button_ClickReset(object sender, RoutedEventArgs e)
@@ -360,6 +397,12 @@ namespace ReplaceDirectoryRecursive
                     this.replaceDiretorioRecursivo(item.FullName, novoCaminho);
                 }
             }
+        }
+
+        public class ListViewReplaceResult
+        {
+            public string Caminho { get; set; }
+            public string Status { get; set; }
         }
     }
 }
