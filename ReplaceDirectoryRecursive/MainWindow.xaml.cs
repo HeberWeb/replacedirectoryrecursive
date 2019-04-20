@@ -33,10 +33,9 @@ namespace ReplaceDirectoryRecursive
         bool? isReplaceFiles = false;
         string txtFindText = "";
         string txtReplaceTo = "";
-
         long sizeFiles = 0;
 
-        public delegate void CaminhoCopyHandler(string valor, int ContPasta);
+        public delegate void CaminhoCopyHandler(string valor, int ContPasta, bool sizerMaxLengthValid);
         public event CaminhoCopyHandler PathCopyEvent;
 
         public delegate void ContagemItensHandler(int qtd);
@@ -85,7 +84,7 @@ namespace ReplaceDirectoryRecursive
             ));
         }
 
-        private void OnPathCopy(string valor, int ContPasta)
+        private void OnPathCopy(string valor, int ContPasta, bool sizerMaxLengthValid)
         {
             int multi = Convert.ToInt32(ContPasta * 100);
             float div = (float)(multi / contaTotalItens);
@@ -145,24 +144,9 @@ namespace ReplaceDirectoryRecursive
 
         private void execReset()
         {
-            ContagemPastasEvent(0);
-            ContagemArquivosEvent(0);
-            ContagemTotalEvent(0);
-            contaPastaTotal = 1;
-            contaArquivosTotal = 0;
-            contaTotalItens = 0;
-            contaPastaReplace = 0;
-            buttonReset.Visibility = Visibility.Hidden;
-            buttonSelOrigem.IsEnabled = true;
-            buttonSelDestino.IsEnabled = true;
-            buttonReplace.Visibility = Visibility.Visible;
-            andamentoReplace.Value = 0;
-            textBoxResultCopy.Text = "";
-            DiretorioFonte.IsReadOnly = false;
-            DiretorioDestino.IsReadOnly = false;
-            DiretorioFonte.Text = "";
-            DiretorioDestino.Text = "";
-            createCopy.IsChecked = true;
+            MainWindow reload = new MainWindow();
+            reload.Show();
+            this.Close();
         }
 
         private void button_ClickSelFolders(object sender, RoutedEventArgs e)
@@ -227,7 +211,6 @@ namespace ReplaceDirectoryRecursive
             else
             {
                 MessageBox.Show("O diretório de Origem não foi encontrado!");
-                this.execReset();
             }
         }
 
@@ -285,14 +268,10 @@ namespace ReplaceDirectoryRecursive
             {
                 var vetCaminho = caminhoDiretorio.Split('\\');
                 string novoCaminho = "";
+                bool sizeFolderMaxLengthValid = false;
                 DirectoryInfo dirAtua = new DirectoryInfo(caminhoDiretorio);
-                if (this.isCreateCopy == true)
-                {
-                    novoCaminho = caminhoDestino + "\\" + vetCaminho[vetCaminho.Length - 1].ToString().Replace(this.txtFindText, this.txtReplaceTo);
-                    if(this.isReplaceDirectories == true)
-                        Directory.CreateDirectory(novoCaminho);
-                }
-                else
+                Thread.Sleep(100);
+                if (this.isCreateCopy == false)
                 {
                     for (int i = 0; i < vetCaminho.Length; i++)
                     {
@@ -304,7 +283,11 @@ namespace ReplaceDirectoryRecursive
                         {
                             if (i == (vetCaminho.Length - 1))
                             {
-                                novoCaminho = novoCaminho + "\\" + vetCaminho[i].ToString().Replace(this.txtFindText, this.txtReplaceTo);
+                                novoCaminho = novoCaminho + "\\" + vetCaminho[i].ToString();
+                                if (this.isReplaceDirectories == true && this.txtFindText != "")
+                                {
+                                    novoCaminho = novoCaminho + "\\" + vetCaminho[i].ToString().Replace(this.txtFindText, this.txtReplaceTo);
+                                }
                             }
                             else
                             {
@@ -313,40 +296,61 @@ namespace ReplaceDirectoryRecursive
                         }
                     }
 
-                    if (caminhoDiretorio != novoCaminho && novoCaminho.Length < 260)
+                    sizeFolderMaxLengthValid = (novoCaminho.Length < 260);
+                    if (caminhoDiretorio != novoCaminho && sizeFolderMaxLengthValid)
                     {
-                        if(this.isReplaceDirectories == true)
+                        if (this.isReplaceDirectories == true)
                             Directory.Move(caminhoDiretorio, novoCaminho);
 
                         dirAtua = new DirectoryInfo(novoCaminho);
                     }
                 }
+                else
+                {
+                    novoCaminho = caminhoDestino + "\\" + vetCaminho[vetCaminho.Length - 1].ToString();
+                    if (this.isReplaceDirectories == true && this.txtFindText != "")
+                    {
+                        novoCaminho = caminhoDestino + "\\" + vetCaminho[vetCaminho.Length - 1].ToString().Replace(this.txtFindText, this.txtReplaceTo);
+                    }
+                    sizeFolderMaxLengthValid = (novoCaminho.Length < 260);
+                    if (sizeFolderMaxLengthValid)
+                        Directory.CreateDirectory(novoCaminho);
+                }
 
                 contaPastaReplace++;
-                PathCopyEvent(novoCaminho, contaPastaReplace);
+                PathCopyEvent(novoCaminho, contaPastaReplace, sizeFolderMaxLengthValid);
 
                 DirectoryInfo[] subDir = dirAtua.GetDirectories();
 
                 FileInfo[] arquivos = dirAtua.GetFiles();
                 foreach (var fileItem in arquivos)
                 {
+                    Thread.Sleep(100);
                     string fileNewName = fileItem.Name;
-                    if (this.isReplaceFiles == true)
+                    if (this.isReplaceFiles == true && this.txtFindText != "")
                     {
-                        fileNewName.Replace(this.txtFindText, this.txtReplaceTo);
+                        fileNewName = fileNewName.Replace(this.txtFindText, this.txtReplaceTo);
                     }
+
                     string caminhoFile = System.IO.Path.Combine(novoCaminho, fileNewName);
                     contaPastaReplace++;
-                    PathCopyEvent(caminhoFile, contaPastaReplace);
-                    if (this.isCreateCopy == true)
+
+                    bool sizeFileMaxLengthValid = (caminhoFile.Length < 260);
+
+                    PathCopyEvent(caminhoFile, contaPastaReplace, sizeFileMaxLengthValid);
+
+                    if (sizeFileMaxLengthValid)
                     {
-                        fileItem.CopyTo(caminhoFile, true);
-                    }
-                    else
-                    {
-                        if (this.isReplaceFiles == true)
+                        if (this.isCreateCopy == false)
                         {
-                            fileItem.MoveTo(caminhoFile);
+                            if (this.isReplaceFiles == true && fileItem.Name != fileNewName)
+                            {
+                                fileItem.MoveTo(caminhoFile);
+                            }
+                        }
+                        else
+                        {
+                            fileItem.CopyTo(caminhoFile, true);
                         }
                     }
                 }
