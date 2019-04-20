@@ -140,6 +140,11 @@ namespace ReplaceDirectoryRecursive
 
         private void button_ClickReset(object sender, RoutedEventArgs e)
         {
+            this.execReset();
+        }
+
+        private void execReset()
+        {
             ContagemPastasEvent(0);
             ContagemArquivosEvent(0);
             ContagemTotalEvent(0);
@@ -215,8 +220,15 @@ namespace ReplaceDirectoryRecursive
             await Dispatcher.BeginInvoke((Action)(() =>
                andamentoReplace.IsIndeterminate = false
             ));
-
-            //await Task.Run(() => replaceDiretorioRecursivo(caminhoDiretorio, caminhoDestino));
+            if (contaTotalItens > 0)
+            {
+                await Task.Run(() => replaceDiretorioRecursivo(caminhoDiretorio, caminhoDestino));
+            }
+            else
+            {
+                MessageBox.Show("O diretório de Origem não foi encontrado!");
+                this.execReset();
+            }
         }
 
         public async Task IniciaContagenItens(string caminhoDiretorio)
@@ -273,11 +285,12 @@ namespace ReplaceDirectoryRecursive
             {
                 var vetCaminho = caminhoDiretorio.Split('\\');
                 string novoCaminho = "";
-                DirectoryInfo dirAtua = new DirectoryInfo(caminhoDiretorio); ;
+                DirectoryInfo dirAtua = new DirectoryInfo(caminhoDiretorio);
                 if (this.isCreateCopy == true)
                 {
                     novoCaminho = caminhoDestino + "\\" + vetCaminho[vetCaminho.Length - 1].ToString().Replace(this.txtFindText, this.txtReplaceTo);
-                    Directory.CreateDirectory(novoCaminho);
+                    if(this.isReplaceDirectories == true)
+                        Directory.CreateDirectory(novoCaminho);
                 }
                 else
                 {
@@ -302,7 +315,9 @@ namespace ReplaceDirectoryRecursive
 
                     if (caminhoDiretorio != novoCaminho && novoCaminho.Length < 260)
                     {
-                        Directory.Move(caminhoDiretorio, novoCaminho);
+                        if(this.isReplaceDirectories == true)
+                            Directory.Move(caminhoDiretorio, novoCaminho);
+
                         dirAtua = new DirectoryInfo(novoCaminho);
                     }
                 }
