@@ -243,7 +243,17 @@ namespace ReplaceDirectoryRecursive
             ));
             if (contaTotalItens > 0)
             {
-                await Task.Run(() => replaceDiretorioRecursivo(caminhoDiretorio, caminhoDestino));
+                try
+                {
+                    await Task.Run(() => replaceDiretorioRecursivo(caminhoDiretorio, caminhoDestino));
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                    await Dispatcher.BeginInvoke((Action)(() =>
+                        buttonReplace.Visibility = Visibility.Visible
+                    ));
+                }
             }
             else
             {
@@ -320,10 +330,13 @@ namespace ReplaceDirectoryRecursive
                         {
                             if (i == (vetCaminho.Length - 1))
                             {
-                                novoCaminho = novoCaminho + "\\" + vetCaminho[i].ToString();
                                 if (this.isReplaceDirectories == true && this.txtFindText != "")
                                 {
                                     novoCaminho = novoCaminho + "\\" + vetCaminho[i].ToString().Replace(this.txtFindText, this.txtReplaceTo);
+                                }
+                                else
+                                {
+                                    novoCaminho = novoCaminho + "\\" + vetCaminho[i].ToString();
                                 }
                             }
                             else
